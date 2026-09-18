@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { IonApp, IonContent, IonPage, IonSpinner } from '@ionic/react';
+import { useEffect, useRef } from 'react';
+import { IonApp, IonContent, IonPage } from '@ionic/react';
 import { SeatingChart } from 'reservaqui';
 import type { PricingRule, SeatingCategory } from 'reservaqui';
 
@@ -18,22 +18,16 @@ const buildPricing = (categories: SeatingCategory[]): PricingRule[] => categorie
 
 export default function App() {
   const chartRef = useRef<SeatingChart | null>(null);
-  const [status, setStatus] = useState('Carregando mapa...');
-  const [error, setError] = useState('');
-
   const applyPricing = (chart: SeatingChart, categories: SeatingCategory[]) => {
     const pricing = buildPricing(categories);
     if (pricing.length === 0) return false;
     chart.setPricing(pricing);
-    setStatus('Mapa pronto — escolha seus lugares');
     return true;
   };
 
   const loadMap = () => {
-    setError('');
     if (!BASE_URL) {
-      setStatus('Configure a URL do servidor');
-      setError('Defina VITE_RESERVAQUI_BASE_URL no arquivo .env para conectar ao servidor Reserva Aqui.');
+      console.error('Defina VITE_RESERVAQUI_BASE_URL no arquivo .env para conectar ao servidor Reserva Aqui.');
       return;
     }
 
@@ -44,22 +38,20 @@ export default function App() {
       workspaceKey: WORKSPACE_KEY,
       event: EVENT_ID,
       mode: 'simplified',
-      height: 'calc(100dvh - 150px)',
+      height: '100dvh',
       onReady: (eventId, _objectKeys, categories = []) => {
         const officialCategories = categories.length > 0 ? categories : chart.getCategories();
         if (!applyPricing(chart, officialCategories)) {
-          setStatus(`Mapa pronto — nenhuma categoria recebida para o evento ${eventId}`);
+          console.warn(`Nenhuma categoria recebida para o evento ${eventId}`);
         }
       },
       onSelectionChanged: (seatIds, ticketTypesBySeat, objectKeys, items, pricingSelection) => {
-        setStatus(`${seatIds.length} lugar(es) selecionado(s)`);
         console.log('Tipos disponíveis:', ticketTypesBySeat);
         console.log('Seleção de preços:', pricingSelection);
         console.log('Objetos selecionados:', { objectKeys, items });
       },
       onError: (_action, message) => {
-        setStatus('Não foi possível carregar o mapa');
-        setError(message);
+        console.error('Reserva Aqui:', message);
       },
     }).render();
     chartRef.current = chart;
@@ -75,22 +67,7 @@ export default function App() {
   return (
     <IonApp>
       <IonPage>
-        <IonContent fullscreen>
-          <main className="booking-shell">
-            {error ? (
-              <section className="configuration-card">
-                <strong>Configuração pendente</strong>
-                <p>{error}</p>
-                <code>VITE_RESERVAQUI_BASE_URL=https://...</code>
-              </section>
-            ) : (
-              <section className="map-card">
-                <div id="seat-map" />
-                <IonSpinner name="crescent" className="map-spinner" />
-              </section>
-            )}
-          </main>
-        </IonContent>
+        <IonContent fullscreen><div id="seat-map" /></IonContent>
       </IonPage>
     </IonApp>
   );
