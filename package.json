@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
     "@ionic/react": "^8.5.0",
     "@ionic/react-router": "^8.5.0",
     "ionicons": "^7.4.0",
@@ -19,6 +21,7 @@
     "reservaqui": "^0.3.2"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.6.9",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
