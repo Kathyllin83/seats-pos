@@ -38,7 +38,7 @@ export default function App() {
       workspaceKey: WORKSPACE_KEY,
       event: EVENT_ID,
       mode: 'simplified',
-      height: '100dvh',
+      height: '100vh',
       onReady: (eventId, _objectKeys, categories = []) => {
         const officialCategories = categories.length > 0 ? categories : chart.getCategories();
         if (!applyPricing(chart, officialCategories)) {
